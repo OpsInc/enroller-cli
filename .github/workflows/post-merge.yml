@@ -1,0 +1,14 @@
+---
+# yamllint disable rule:line-length
+
+name: Post merge CI
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  git-post-merge:
+    if: github.event.pull_request.merged == true
+    uses: OpsInc/workflow-lib/.github/workflows/git-tag-release.yml@main

@@ -1,0 +1,21 @@
+---
+# yamllint disable rule:line-length
+
+name: Pipeline CI
+on:
+  push:
+    branches:
+      - "feature/**"
+  pull_request:
+    branches: main
+
+jobs:
+  git-version-gating:
+    uses: OpsInc/workflow-lib/.github/workflows/git-version-gating.yml@main
+
+  go-CI:
+    uses: OpsInc/workflow-lib/.github/workflows/go-CI.yml@main
+    with:
+      REPO_STYLE: "standard"
+      S3_BUCKET: "pipeline-artifact-enroller-sbx.nodestack.cloud"
+    secrets: inherit
