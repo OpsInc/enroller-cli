@@ -9,19 +9,13 @@ import (
 )
 
 //nolint:gochecknoglobals
-var (
-	auth        string
-	authOptions string
-)
-
-//nolint:gochecknoglobals
-var validateCmd = &cobra.Command{
-	Use:   "validate <URL>",
-	Short: "Sends validation request.",
+var dispatchCmd = &cobra.Command{
+	Use:   "dispatch <URL>",
+	Short: "Sends dispatch request.",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		tokenID := authenticationMethod(auth)
-		body := fetchEnvToValidate()
+		body := fetchEnvToDispatch()
 		postURL(args[0], tokenID, body)
 	},
 }
@@ -29,12 +23,11 @@ var validateCmd = &cobra.Command{
 //nolint:gochecknoinits
 func init() {
 	authOptions = "List of supported authentication methods values: [cognito]"
-	validateCmd.PersistentFlags().StringVarP(&auth, "auth", "a", "cognito", authOptions)
+	dispatchCmd.PersistentFlags().StringVarP(&auth, "auth", "a", "cognito", authOptions)
 }
 
-// fetchEnvToJson will fetch all the following requireds environment variables:
-// [FILE_PATH, REPO, BRANCH, ORG, PR_NUMBER].
-func fetchEnvToValidate() []byte {
+// Fetches environment variables to feed to dispatcher
+func fetchEnvToDispatch() []byte {
 	var errMsg []string
 	errMsg = errMsg[:0]
 
@@ -58,22 +51,16 @@ func fetchEnvToValidate() []byte {
 		errMsg = append(errMsg, "ORG")
 	}
 
-	prNumber, ok := os.LookupEnv("PR_NUMBER")
-	if !ok {
-		errMsg = append(errMsg, "PR_NUMBER")
-	}
-
 	if len(errMsg) > 0 {
 		log.Printf("The following Environment Variables need to be set: %v", errMsg)
 		os.Exit(1)
 	}
 
 	jsonBody := &Body{
-		Path:     filePath,
-		Repo:     repo,
-		Branch:   branch,
-		Org:      org,
-		PrNumber: prNumber,
+		Path:   filePath,
+		Repo:   repo,
+		Branch: branch,
+		Org:    org,
 	}
 
 	jsonRequest, err := json.Marshal(jsonBody)

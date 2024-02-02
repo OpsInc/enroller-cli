@@ -11,6 +11,36 @@ import (
 	"github.com/OpsInc/enroller-client/internal/cloud"
 )
 
+type Body struct {
+	Path     string `json:"path"`
+	Repo     string `json:"repo"`
+	Branch   string `json:"branch"`
+	Org      string `json:"org"`
+	PrNumber string `json:"prNumber"`
+}
+
+// postURL sends a JSON POST request.
+// It uses a Bearer auth Header.
+func postURL(url string, tokenID string, body []byte) {
+	r, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+	if err != nil {
+		log.Fatalf("Unable to configure POST to url: %v because of err: %v", url, err)
+	}
+
+	r.Header.Add("Content-Type", "application/json")
+	r.Header.Add("Bearer", tokenID)
+
+	client := &http.Client{}
+
+	resp, err := client.Do(r)
+	if err != nil {
+		log.Fatalf("Unable to send POST to url: %v because of err: %v", url, err)
+	}
+	defer resp.Body.Close()
+
+	log.Println(resp.StatusCode)
+}
+
 // Flag: auth
 // authenticationMethod defines the authentication method
 // and fetchs the auth token.
@@ -57,26 +87,4 @@ func cognitoMethod(errMsg []string) string {
 	// os.Stdout.Write([]byte(tokenID))
 
 	return tokenID
-}
-
-// postURL sends a JSON POST request.
-// It uses a Bearer auth Header.
-func postURL(url string, tokenID string, body []byte) {
-	r, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
-	if err != nil {
-		log.Fatalf("Unable to configure POST to url: %v because of err: %v", url, err)
-	}
-
-	r.Header.Add("Content-Type", "application/json")
-	r.Header.Add("Bearer", tokenID)
-
-	client := &http.Client{}
-
-	resp, err := client.Do(r)
-	if err != nil {
-		log.Fatalf("Unable to send POST to url: %v because of err: %v", url, err)
-	}
-	defer resp.Body.Close()
-
-	log.Println(resp.StatusCode)
 }

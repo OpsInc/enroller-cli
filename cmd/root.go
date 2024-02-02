@@ -28,4 +28,5 @@ func Execute() {
 //nolint:gochecknoinits
 func init() {
 	rootCmd.AddCommand(validateCmd)
+	rootCmd.AddCommand(dispatchCmd)
 }
