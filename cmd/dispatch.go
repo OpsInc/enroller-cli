@@ -26,7 +26,7 @@ func init() {
 	dispatchCmd.PersistentFlags().StringVarP(&auth, "auth", "a", "cognito", authOptions)
 }
 
-// Fetches environment variables to feed to dispatcher
+// Fetches environment variables to feed to dispatcher.
 func fetchEnvToDispatch() []byte {
 	var errMsg []string
 	errMsg = errMsg[:0]
