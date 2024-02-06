@@ -16,7 +16,7 @@ type Body struct {
 	Repo     string `json:"repo"`
 	Branch   string `json:"branch"`
 	Org      string `json:"org"`
-	PrNumber string `json:"prNumber"`
+	PrNumber string `json:"prNumber,omitempty"`
 }
 
 // postURL sends a JSON POST request.
