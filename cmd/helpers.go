@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -11,7 +12,14 @@ import (
 	"github.com/OpsInc/enroller-client/internal/cloud"
 )
 
-type Body struct {
+var (
+	auth        string
+	authOptions string
+	gitKind     string
+)
+
+type Data struct {
+	Git      string `json:"git"`
 	Path     string `json:"path"`
 	Repo     string `json:"repo"`
 	Branch   string `json:"branch"`
@@ -38,7 +46,12 @@ func postURL(url string, tokenID string, body []byte) {
 	}
 	defer resp.Body.Close()
 
-	log.Println(resp.StatusCode)
+	readBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalf("Reading response body failed with error: %v", err)
+	}
+
+	os.Stdout.Write([]byte(string(readBody) + "\n"))
 }
 
 // Flag: auth
