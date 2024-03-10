@@ -29,5 +29,7 @@ func CognitoUserSignin(awsCfg aws.Config, username string, password string, appC
 		log.Fatal("Cognito signin failed because of error: ", err)
 	}
 
+	// fmt.Println(*out.AuthenticationResult.IdToken)
+
 	return *out.AuthenticationResult.IdToken
 }

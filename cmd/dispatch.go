@@ -13,7 +13,7 @@ var dispatchCmd = &cobra.Command{
 	Use:   "dispatch <URL>",
 	Short: "Sends dispatch request.",
 	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, args []string) { //nolint:revive
 		tokenID := authenticationMethod(auth)
 		body := fetchEnvToDispatch()
 		postURL(args[0], tokenID, body)
@@ -24,6 +24,7 @@ var dispatchCmd = &cobra.Command{
 func init() {
 	authOptions = "List of supported authentication methods values: [cognito]"
 	dispatchCmd.PersistentFlags().StringVarP(&auth, "auth", "a", "cognito", authOptions)
+	dispatchCmd.PersistentFlags().StringVarP(&gitKind, "git", "g", "github", authOptions)
 }
 
 // Fetches environment variables to feed to dispatcher.
@@ -56,14 +57,15 @@ func fetchEnvToDispatch() []byte {
 		os.Exit(1)
 	}
 
-	jsonBody := &Body{
+	jsonData := &Data{
+		Git:    gitKind,
 		Path:   filePath,
 		Repo:   repo,
 		Branch: branch,
 		Org:    org,
 	}
 
-	jsonRequest, err := json.Marshal(jsonBody)
+	jsonRequest, err := json.Marshal(jsonData)
 	if err != nil {
 		log.Fatalf("Unable to Marshal the JSON body with err: %v", err)
 	}

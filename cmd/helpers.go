@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -11,7 +12,15 @@ import (
 	"github.com/OpsInc/enroller-client/internal/cloud"
 )
 
-type Body struct {
+//nolint:gochecknoglobals
+var (
+	auth        string
+	authOptions string
+	gitKind     string
+)
+
+type Data struct {
+	Git      string `json:"git"`
 	Path     string `json:"path"`
 	Repo     string `json:"repo"`
 	Branch   string `json:"branch"`
@@ -34,11 +43,16 @@ func postURL(url string, tokenID string, body []byte) {
 
 	resp, err := client.Do(r)
 	if err != nil {
-		log.Fatalf("Unable to send POST to url: %v because of err: %v", url, err)
+		log.Printf("Unable to send POST to url: %v because of err: %v", url, err)
 	}
 	defer resp.Body.Close()
 
-	log.Println(resp.StatusCode)
+	readBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Reading response body failed with error: %v", err)
+	}
+
+	os.Stdout.Write([]byte(string(readBody) + "\n"))
 }
 
 // Flag: auth

@@ -9,17 +9,11 @@ import (
 )
 
 //nolint:gochecknoglobals
-var (
-	auth        string
-	authOptions string
-)
-
-//nolint:gochecknoglobals
 var validateCmd = &cobra.Command{
 	Use:   "validate <URL>",
 	Short: "Sends validation request.",
 	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, args []string) { //nolint:revive
 		tokenID := authenticationMethod(auth)
 		body := fetchEnvToValidate()
 		postURL(args[0], tokenID, body)
@@ -68,7 +62,8 @@ func fetchEnvToValidate() []byte {
 		os.Exit(1)
 	}
 
-	jsonBody := &Body{
+	jsonData := &Data{
+		Git:      gitKind,
 		Path:     filePath,
 		Repo:     repo,
 		Branch:   branch,
@@ -76,7 +71,7 @@ func fetchEnvToValidate() []byte {
 		PrNumber: prNumber,
 	}
 
-	jsonRequest, err := json.Marshal(jsonBody)
+	jsonRequest, err := json.Marshal(jsonData)
 	if err != nil {
 		log.Fatalf("Unable to Marshal the JSON body with err: %v", err)
 	}
