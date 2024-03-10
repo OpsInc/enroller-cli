@@ -12,6 +12,7 @@ import (
 	"github.com/OpsInc/enroller-client/internal/cloud"
 )
 
+//nolint:gochecknoglobals
 var (
 	auth        string
 	authOptions string
@@ -42,13 +43,13 @@ func postURL(url string, tokenID string, body []byte) {
 
 	resp, err := client.Do(r)
 	if err != nil {
-		log.Fatalf("Unable to send POST to url: %v because of err: %v", url, err)
+		log.Printf("Unable to send POST to url: %v because of err: %v", url, err)
 	}
 	defer resp.Body.Close()
 
 	readBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalf("Reading response body failed with error: %v", err)
+		log.Printf("Reading response body failed with error: %v", err)
 	}
 
 	os.Stdout.Write([]byte(string(readBody) + "\n"))

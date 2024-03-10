@@ -13,7 +13,7 @@ var dispatchCmd = &cobra.Command{
 	Use:   "dispatch <URL>",
 	Short: "Sends dispatch request.",
 	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, args []string) { //nolint:revive
 		tokenID := authenticationMethod(auth)
 		body := fetchEnvToDispatch()
 		postURL(args[0], tokenID, body)
